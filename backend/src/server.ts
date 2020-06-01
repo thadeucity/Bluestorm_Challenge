@@ -24,8 +24,9 @@ const publicCarConfig = {
 let onlineUsersOnPublicRoom = 0;
 
 const publicSockets = sockets.of('/public');
+const privateSockets = sockets.of('/private');
 
-sockets.on('connection', socket => {
+privateSockets.on('connection', socket => {
   console.log(`Socket: ${socket.id} connected`);
 
   socket.emit('receivedImage', getPaintData('blue'));

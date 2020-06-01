@@ -24,7 +24,11 @@ interface ReceivedColorList {
   tagHex: string;
 }
 
-const socket = io(`http://localhost:3332/public`);
+const publicSocket = io(`http://localhost:3332/public`, { autoConnect: false });
+
+if (window.location.pathname === '/public_configurator') {
+  publicSocket.open();
+}
 
 const ProductConfigurator: React.FC = () => {
   const [selectedPaint, setSelectedPaint] = useState('blue');
@@ -44,35 +48,35 @@ const ProductConfigurator: React.FC = () => {
   const [userNumber, setUserNumber] = useState(1);
 
   const changePaint = useCallback((paintName: string): void => {
-    socket.emit('changePaint', paintName);
+    publicSocket.emit('changePaint', paintName);
   }, []);
 
   const changePackage = useCallback((packageName: string): void => {
-    socket.emit('changePackage', packageName);
+    publicSocket.emit('changePackage', packageName);
   }, []);
 
   const changeWheels = useCallback((wheelName: string): void => {
-    socket.emit('changeWheels', wheelName);
+    publicSocket.emit('changeWheels', wheelName);
   }, []);
 
   const changeHeadlight = useCallback((headlightName: string): void => {
-    socket.emit('changeHeadlight', headlightName);
+    publicSocket.emit('changeHeadlight', headlightName);
   }, []);
 
   useEffect(() => {
-    socket.on('availableColors', (colorList: ReceivedColorList[]) => {
+    publicSocket.on('availableColors', (colorList: ReceivedColorList[]) => {
       setPaintColors(colorList);
     });
   }, []);
 
   useEffect(() => {
-    socket.on('connectedUsers', (numberOfUsers: number) => {
+    publicSocket.on('connectedUsers', (numberOfUsers: number) => {
       setUserNumber(numberOfUsers);
     });
   }, []);
 
   useEffect(() => {
-    socket.on('receivedImage', (recImage: ReceivedImage) => {
+    publicSocket.on('receivedImage', (recImage: ReceivedImage) => {
       switch (recImage.type) {
         case 'paint':
           setPaintImage(recImage.data);

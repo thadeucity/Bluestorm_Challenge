@@ -24,7 +24,11 @@ interface ReceivedColorList {
   tagHex: string;
 }
 
-const socket = io(`http://localhost:3332`);
+const socket = io(`http://localhost:3332/private`, { autoConnect: false });
+
+if (window.location.pathname === '/product_configurator') {
+  socket.open();
+}
 
 const ProductConfigurator: React.FC = () => {
   const [selectedPaint, setSelectedPaint] = useState('blue');

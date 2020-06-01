@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import io from 'socket.io';
+import cors from 'cors';
 
 import {
   getPaintData,
@@ -11,6 +12,7 @@ import getWheelData from './controllers/CarWheelController';
 import getHeadlightData from './controllers/CarHeadlightController';
 
 const app = express();
+app.use(cors());
 const server = http.createServer(app);
 const sockets = io(server);
 

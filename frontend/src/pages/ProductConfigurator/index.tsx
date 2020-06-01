@@ -24,7 +24,7 @@ interface ReceivedColorList {
   tagHex: string;
 }
 
-const socket = io(`http://localhost:3332/private`, { autoConnect: false });
+const socket = io(`http://162.241.96.25:3332/private`, { autoConnect: false });
 
 if (window.location.pathname === '/product_configurator') {
   socket.open();

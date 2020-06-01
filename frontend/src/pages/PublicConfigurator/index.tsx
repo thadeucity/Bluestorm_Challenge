@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import io from 'socket.io-client';
-import { Person } from '@material-ui/icons';
+import { PeopleAlt } from '@material-ui/icons';
 
 import ShowRoom from '../../components/ShowRoom';
 import Header from '../../components/Header';
@@ -24,7 +24,7 @@ interface ReceivedColorList {
   tagHex: string;
 }
 
-const socket = io(`http://localhost:3332`);
+const socket = io(`http://localhost:3332/public`);
 
 const ProductConfigurator: React.FC = () => {
   const [selectedPaint, setSelectedPaint] = useState('blue');
@@ -40,6 +40,8 @@ const ProductConfigurator: React.FC = () => {
   const [paintColors, setPaintColors] = useState<ReceivedColorList[]>([
     { name: 'blue', tagHex: '#085db2' },
   ]);
+
+  const [userNumber, setUserNumber] = useState(1);
 
   const changePaint = useCallback((paintName: string): void => {
     socket.emit('changePaint', paintName);
@@ -60,6 +62,12 @@ const ProductConfigurator: React.FC = () => {
   useEffect(() => {
     socket.on('availableColors', (colorList: ReceivedColorList[]) => {
       setPaintColors(colorList);
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on('connectedUsers', (numberOfUsers: number) => {
+      setUserNumber(numberOfUsers);
     });
   }, []);
 
@@ -91,7 +99,7 @@ const ProductConfigurator: React.FC = () => {
 
   return (
     <Container>
-      <Header title="Seven 275" icon={Person} />
+      <Header title="Seven 275" users={userNumber} icon={PeopleAlt} />
 
       <Dashboard>
         <ShowRoom

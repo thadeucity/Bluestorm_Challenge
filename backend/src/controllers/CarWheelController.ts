@@ -24,5 +24,6 @@ export default function getWheelData(wheelName: string): FileDataDTO {
   return {
     type: 'wheel',
     data: `data:image/png;base64,${fileData.toString('base64')}`,
+    name: wheelName,
   };
 }

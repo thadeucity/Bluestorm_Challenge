@@ -1,7 +1,6 @@
 import express from 'express';
 import http from 'http';
 import io from 'socket.io';
-import path from 'path';
 
 import {
   getPaintData,
@@ -15,11 +14,16 @@ const app = express();
 const server = http.createServer(app);
 const sockets = io(server);
 
-function changePackage(packageName: string): string {
-  return path.resolve(__dirname, 'assets', 'pack', `${packageName}.png`);
-}
+const publicCarConfig = {
+  paint: 'blue',
+  wheels: 'orcus_silver',
+  package: 'standart',
+  headlights: 'halogen',
+};
 
-app.use(express.json());
+let onlineUsersOnPublicRoom = 0;
+
+const publicSockets = sockets.of('/public');
 
 sockets.on('connection', socket => {
   console.log(`Socket: ${socket.id} connected`);
@@ -45,6 +49,45 @@ sockets.on('connection', socket => {
 
   socket.on('disconnect', () => {
     console.log(`Socket: ${socket.id} disconnected`);
+  });
+});
+
+publicSockets.on('connection', socket => {
+  console.log(`Socket: ${socket.id} is connected to the public page`);
+
+  socket.emit('receivedImage', getPaintData(publicCarConfig.paint));
+  socket.emit('receivedImage', getWheelData(publicCarConfig.wheels));
+  socket.emit('receivedImage', getHeadlightData(publicCarConfig.headlights));
+  socket.emit('receivedImage', getPackageData(publicCarConfig.package));
+
+  socket.emit('availableColors', availablePaintColors);
+  onlineUsersOnPublicRoom += 1;
+  publicSockets.emit('connectedUsers', onlineUsersOnPublicRoom);
+
+  socket.on('changePaint', paintName => {
+    publicCarConfig.paint = paintName;
+    publicSockets.emit('receivedImage', getPaintData(paintName));
+  });
+
+  socket.on('changeWheels', wheelName => {
+    publicCarConfig.wheels = wheelName;
+    publicSockets.emit('receivedImage', getWheelData(wheelName));
+  });
+
+  socket.on('changeHeadlight', headlightName => {
+    publicCarConfig.headlights = headlightName;
+    publicSockets.emit('receivedImage', getHeadlightData(headlightName));
+  });
+
+  socket.on('changePackage', packageName => {
+    publicCarConfig.package = packageName;
+    publicSockets.emit('receivedImage', getPackageData(packageName));
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`Socket: ${socket.id} disconnected`);
+    onlineUsersOnPublicRoom -= 1;
+    publicSockets.emit('connectedUsers', onlineUsersOnPublicRoom);
   });
 });
 

@@ -24,5 +24,6 @@ export default function getPackageData(packageName: string): FileDataDTO {
   return {
     type: 'package',
     data: `data:image/png;base64,${fileData.toString('base64')}`,
+    name: packageName,
   };
 }

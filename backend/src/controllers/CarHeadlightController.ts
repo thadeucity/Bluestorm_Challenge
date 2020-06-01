@@ -24,5 +24,6 @@ export default function getHeadlightData(headlightName: string): FileDataDTO {
   return {
     type: 'headlight',
     data: `data:image/png;base64,${fileData.toString('base64')}`,
+    name: headlightName,
   };
 }

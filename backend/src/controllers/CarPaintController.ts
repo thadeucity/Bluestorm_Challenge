@@ -34,5 +34,6 @@ export function getPaintData(paintName: string): FileDataDTO {
   return {
     type: 'paint',
     data: `data:image/png;base64,${fileData.toString('base64')}`,
+    name: paintName,
   };
 }
